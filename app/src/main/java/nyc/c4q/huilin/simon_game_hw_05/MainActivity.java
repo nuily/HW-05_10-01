@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private Button start;
     private Button round;
     private int roundCnt;
+    private int turns;
 
 
     ArrayList<String> simon = new ArrayList<String>();
@@ -41,10 +42,12 @@ public class MainActivity extends AppCompatActivity {
             Fader.RunAlphaAnimation(view);
             color = getResources().getResourceEntryName(view.getId());
             Log.d("My Choice:", color);
+            turns++;
+            Log.d("Turns:", String.valueOf(turns));
 
-            if (!simon.isEmpty()) {
+            if (turns % 2 == 0) {
                 String simonsChoice = simon.get(simon.size()-1);
-                if (true) {
+                if (color.equalsIgnoreCase(simonsChoice)) {
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -55,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(MainActivity.this, "Game Over!", Toast.LENGTH_LONG).show();
                     turnOffButtons();
+                    start.setText("Restart");
+                    start.setClickable(true);
                 }
             } else if (roundCnt == 0) {
                 Toast.makeText(MainActivity.this, "Click the Start button!", Toast.LENGTH_SHORT).show();
@@ -76,18 +81,22 @@ public class MainActivity extends AppCompatActivity {
         yellow.setOnClickListener(new HandleClick());
         blue.setOnClickListener(new HandleClick());
         start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                simonThenPlayer();
-            }
-        });
+                                     @Override
+                                     public void onClick(View view) {
+                                         if (roundCnt != 0) {
+                                             roundCnt = 0;
+                                         }  simonThenPlayer();
+                                     }
+                                 });
+
 
         round.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (roundCnt != 0) {
-                    roundCnt = 0;
-                    simonThenPlayer();
+                if (start.getText().equals("Start")) {
+                    Toast.makeText(MainActivity.this, "Trying to restart? No no no, not yet!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "You got up to round " + roundCnt, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -106,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (roundCnt == 0) {
             simon.clear();
+            turns = 0;
         }
 
         roundCnt++;
