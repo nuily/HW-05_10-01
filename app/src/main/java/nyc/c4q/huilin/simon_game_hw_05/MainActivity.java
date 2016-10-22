@@ -11,6 +11,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static android.util.Log.d;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Simon";
@@ -23,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
     private Button round;
     private int roundCnt;
     private int turns;
+    private int choice;
+    private boolean isCorrect;
 
 
     ArrayList<String> simon = new ArrayList<String>();
@@ -41,14 +45,24 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View view) {
             Fader.RunAlphaAnimation(view);
             color = getResources().getResourceEntryName(view.getId());
-            Log.d("My Choice:", color);
+            d("My Choice", color);
 //            turns++;
 //            Log.d("Turns:", String.valueOf(turns));
-
 //            if (turns % 2 == 0) {
             if (!simon.isEmpty()) {
-                String simonsChoice = simon.get(simon.size() - 1);
-                if (color.equalsIgnoreCase(simonsChoice)) {
+                choice++;
+                Log.d("Simon's choice", simon.get(choice - 1));
+
+                if (color.equalsIgnoreCase(simon.get(choice - 1))) {
+                    isCorrect = true;
+                } else {
+                    isCorrect = false;
+                }
+                // how will this wait for the next input to continue comparing from where last left off
+
+                if (isCorrect && choice == roundCnt) {
+                    turnOffButtons();
+                    choice = 0;
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -56,16 +70,14 @@ public class MainActivity extends AppCompatActivity {
                             runGame();
                         }
                     }, 1000);
-                } else {
+                } else if (!isCorrect) {
                     Toast.makeText(MainActivity.this, "Game Over!", Toast.LENGTH_LONG).show();
                     turnOffButtons();
                     start.setText("Restart");
                     start.setClickable(true);
                 }
-            } else if (roundCnt == 0) {
-                Toast.makeText(MainActivity.this, "Click the Start button!", Toast.LENGTH_SHORT).show();
-                turnOffButtons();
             }
+
         }
     }
 
@@ -86,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (roundCnt != 0) {
                     roundCnt = 0;
+                    simon.clear();
                     start.setText("Start");
                 }
                 runGame();
@@ -123,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
         roundCnt++;
         round.setText("Round:" + roundCnt);
 
-        turnOffButtons();
         Handler handler = new Handler();
 
         if (!simon.isEmpty()) {
@@ -183,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        Log.d(TAG, String.valueOf(simon));
+        d(TAG, String.valueOf(simon));
 
         turnOnButtons();
     }
