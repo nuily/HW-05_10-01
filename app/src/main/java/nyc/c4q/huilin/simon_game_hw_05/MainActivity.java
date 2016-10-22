@@ -42,19 +42,20 @@ public class MainActivity extends AppCompatActivity {
             Fader.RunAlphaAnimation(view);
             color = getResources().getResourceEntryName(view.getId());
             Log.d("My Choice:", color);
-            turns++;
-            Log.d("Turns:", String.valueOf(turns));
+//            turns++;
+//            Log.d("Turns:", String.valueOf(turns));
 
-            if (turns % 2 == 0) {
-                String simonsChoice = simon.get(simon.size()-1);
+//            if (turns % 2 == 0) {
+            if (!simon.isEmpty()) {
+                String simonsChoice = simon.get(simon.size() - 1);
                 if (color.equalsIgnoreCase(simonsChoice)) {
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            simonThenPlayer();
+                            runGame();
                         }
-                    },1000);
+                    }, 1000);
                 } else {
                     Toast.makeText(MainActivity.this, "Game Over!", Toast.LENGTH_LONG).show();
                     turnOffButtons();
@@ -81,13 +82,15 @@ public class MainActivity extends AppCompatActivity {
         yellow.setOnClickListener(new HandleClick());
         blue.setOnClickListener(new HandleClick());
         start.setOnClickListener(new View.OnClickListener() {
-                                     @Override
-                                     public void onClick(View view) {
-                                         if (roundCnt != 0) {
-                                             roundCnt = 0;
-                                         }  simonThenPlayer();
-                                     }
-                                 });
+            @Override
+            public void onClick(View view) {
+                if (roundCnt != 0) {
+                    roundCnt = 0;
+                    start.setText("Start");
+                }
+                runGame();
+            }
+        });
 
 
         round.setOnClickListener(new View.OnClickListener() {
@@ -103,8 +106,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    public void simonThenPlayer() {
+    public void runGame() {
 
             /* first simon plays then player method is called
     * once clicked, compare that choice to the place in the simon array list
@@ -115,38 +117,75 @@ public class MainActivity extends AppCompatActivity {
 
         if (roundCnt == 0) {
             simon.clear();
-            turns = 0;
+//            turns = 0;
         }
 
         roundCnt++;
         round.setText("Round:" + roundCnt);
 
         turnOffButtons();
+        Handler handler = new Handler();
 
+        if (!simon.isEmpty()) {
+            for (int i = 0; i <= simon.size(); i++) {
+                final int finalI = i;
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!simon.isEmpty() && finalI != simon.size()) {
+
+                            switch (simon.get(finalI)) {
+                                case "green":
+                                    Fader.RunAlphaAnimation(green);
+                                    break;
+                                case "red":
+                                    Fader.RunAlphaAnimation(red);
+                                    break;
+                                case "yellow":
+                                    Fader.RunAlphaAnimation(yellow);
+                                    break;
+                                case "blue":
+                                    Fader.RunAlphaAnimation(blue);
+                                    break;
+                            }
+
+                        } else {
+                            simonPlays();
+                        }
+                    }
+                }, 0 + (finalI * 1000));
+            }
+        } else {
+            simonPlays();
+        }
+
+
+    }
+
+    public void simonPlays() {
         int index = random.nextInt(4);
         switch (index) {
             case 0:
-                green.callOnClick();
+                Fader.RunAlphaAnimation(green);
                 simon.add("green");
                 break;
             case 1:
-                red.callOnClick();
+                Fader.RunAlphaAnimation(red);
                 simon.add("red");
                 break;
             case 2:
-                yellow.callOnClick();
+                Fader.RunAlphaAnimation(yellow);
                 simon.add("yellow");
                 break;
             case 3:
-                blue.callOnClick();
+                Fader.RunAlphaAnimation(blue);
                 simon.add("blue");
                 break;
         }
+
         Log.d(TAG, String.valueOf(simon));
 
         turnOnButtons();
-
-
     }
 
     public void turnOffButtons() {
