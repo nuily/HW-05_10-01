@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
     private Button start;
     private Button round;
     private int roundCnt;
-    private int turns;
     private int choice;
     private boolean isCorrect;
 
@@ -46,9 +45,6 @@ public class MainActivity extends AppCompatActivity {
             Fader.RunAlphaAnimation(view);
             color = getResources().getResourceEntryName(view.getId());
             d("My Choice", color);
-//            turns++;
-//            Log.d("Turns:", String.valueOf(turns));
-//            if (turns % 2 == 0) {
             if (!simon.isEmpty()) {
                 choice++;
                 Log.d("Simon's choice", simon.get(choice - 1));
@@ -73,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (!isCorrect) {
                     Toast.makeText(MainActivity.this, "Game Over!", Toast.LENGTH_LONG).show();
                     turnOffButtons();
+                    choice = 0;
                     start.setText("Restart");
                     start.setClickable(true);
                 }
